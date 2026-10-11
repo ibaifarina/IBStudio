@@ -1,0 +1,101 @@
+.sketch-card-section {
+  --sketch-intensity: 0.5;
+  --sketch-text: color-mix(in srgb, #47515b, #33404c calc(var(--sketch-intensity) * 100%));
+  padding: 48px 20px 96px;
+}
+
+.sketch-card-panel {
+  position: relative;
+  display: grid;
+  align-items: center;
+  width: min(100%, 760px);
+  min-height: 420px;
+  margin-inline: auto;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid color-mix(in srgb, #dedfd8, #cfd7df calc(var(--sketch-intensity) * 100%));
+  border-radius: 24px;
+  background: #f7f3e9;
+  color: #202a34;
+}
+
+.sketch-card-artwork,
+.sketch-card-fallback,
+.sketch-card-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.sketch-card-artwork {
+  z-index: -1;
+  overflow: hidden;
+}
+
+.sketch-card-fallback {
+  background:
+    radial-gradient(ellipse at 54% 52%, color-mix(in srgb, var(--sketch-ink) var(--sketch-wash), transparent), transparent 62%),
+    radial-gradient(ellipse at 90% 18%, color-mix(in srgb, var(--sketch-ink) var(--sketch-wash), transparent), transparent 58%),
+    radial-gradient(ellipse at 12% 86%, color-mix(in srgb, var(--sketch-ink) var(--sketch-wash), transparent), transparent 54%),
+    var(--sketch-paper);
+}
+
+.sketch-card-canvas { opacity: 0; }
+.sketch-card-canvas[data-ready="true"] { opacity: 1; }
+
+.sketch-card-content {
+  position: relative;
+  padding: 72px 44px 84px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.sketch-card-eyebrow {
+  display: block;
+  margin-bottom: 24px;
+  color: var(--sketch-text);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.sketch-card-content h2 {
+  max-width: 560px;
+  margin: 0 auto;
+  color: #202a34;
+  font-size: clamp(3.1rem, 5.5vw, 4.7rem);
+  text-wrap: balance;
+}
+
+.sketch-card-content h2 em { color: inherit; }
+
+.sketch-card-content p {
+  max-width: 32ch;
+  margin: 22px auto 0;
+  color: var(--sketch-text);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.sketch-card-signature {
+  position: absolute;
+  right: 28px;
+  bottom: 24px;
+  color: var(--sketch-text);
+  font-size: 0.8rem;
+  letter-spacing: -0.03em;
+  pointer-events: none;
+}
+
+@media (width < 40rem) {
+  .sketch-card-section { padding-block: 32px 64px; }
+  .sketch-card-panel { min-height: 360px; border-radius: 18px; }
+  .sketch-card-content { padding: 64px 24px 76px; }
+  .sketch-card-eyebrow { font-size: 0.63rem; margin-bottom: 22px; }
+  .sketch-card-content p { font-size: 0.93rem; }
+  .sketch-card-signature { right: 22px; bottom: 20px; }
+}
