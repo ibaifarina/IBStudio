@@ -83,8 +83,8 @@ export const plans: {
 
 export const faqs = [
   {
-    q: "¿Tengo que pagar una cuota todos los meses?",
-    a: "No. Es un pago único y la web es tuya para siempre. Solo hay un pequeño coste anual de dominio y alojamiento, sin permanencia.",
+    q: "¿Hay que pagar una cuota mensual?",
+    a: "Sí. Además del pago inicial por la web, hay una cuota mensual de mantenimiento para que siga funcionando, segura y al día, con los cambios que necesites.",
   },
   {
     q: "¿Podré editar los textos o imágenes yo mismo?",

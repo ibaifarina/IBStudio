@@ -6,9 +6,8 @@ import { ease } from "@/components/motion";
 import { DemoSite } from "@/components/v2/demo-site";
 import { AnalyticsCard, PriceCard, ReviewsCard, WhatsAppCard } from "@/components/v2/hero-cards";
 import { Phone } from "@/components/v2/phone";
-import { PrimaryButton, SecondaryButton } from "@/components/v2/ui";
+import { Arrow, SecondaryButton } from "@/components/v2/ui";
 import { cn } from "@/lib/utils";
-
 
 function Float({ children, className, delay, y }: { children: React.ReactNode; className?: string; delay: number; y: MotionValue<number> }) {
   return (
@@ -49,13 +48,7 @@ export function HeroV2() {
                 animate={{ y: "0%" }}
                 transition={{ duration: 1.1, delay: 0.15 + i * 0.1, ease }}
               >
-                {i === 1 ? (
-                  <>
-                    visitas en <em className="text-brand">clientes</em>
-                  </>
-                ) : (
-                  line
-                )}
+                {line}
               </motion.span>
             </span>
           ))}
@@ -67,17 +60,25 @@ export function HeroV2() {
           transition={{ duration: 1, delay: 0.5, ease }}
           className="mt-5 max-w-md text-[1.08rem] text-pretty text-neutral-600 sm:text-lg"
         >
-          Diseño web para negocios locales en Barcelona. Pago único, sin cuotas.
+          Diseño web y mantenimiento para negocios locales en Barcelona.
         </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.62, ease }}
-          className="mt-8 flex flex-wrap justify-center gap-3"
+          className="mt-8 flex w-full max-w-sm flex-col gap-2.5 sm:w-auto sm:max-w-none sm:flex-row sm:gap-3"
         >
-          <PrimaryButton href="#contacto">Cuéntame tu proyecto</PrimaryButton>
-          <SecondaryButton href="#proyectos">Ver proyectos</SecondaryButton>
+          <a
+            href="#contacto"
+            className="group inline-flex h-12 items-center justify-center gap-2.5 rounded-full bg-neutral-950 px-6 text-[0.95rem] font-medium text-white shadow-[0_10px_30px_-12px_rgba(0,0,0,0.5)] transition-all duration-300 hover:bg-brand hover:shadow-[0_12px_30px_-10px_var(--brand)]"
+          >
+            Cuéntame tu proyecto
+            <Arrow className="size-3.5 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
+          </a>
+          <SecondaryButton href="#proyectos" className="justify-center">
+            Ver proyectos
+          </SecondaryButton>
         </motion.div>
       </div>
 
@@ -94,11 +95,11 @@ export function HeroV2() {
           </motion.div>
         </motion.div>
 
-        <Float delay={0.95} y={slow} className="top-28 -left-2 sm:top-24 sm:left-[9%] lg:top-16 lg:left-[6%]">
+        <Float delay={0.95} y={slow} className="top-24 left-2 sm:top-24 sm:left-[9%] lg:top-16 lg:left-[6%]">
           <AnalyticsCard className="-rotate-[3deg]" />
         </Float>
 
-        <Float delay={1.05} y={fast} className="top-40 -right-2 sm:top-40 sm:right-[9%] lg:top-24 lg:right-[6%]">
+        <Float delay={1.05} y={fast} className="top-52 right-2 sm:top-40 sm:right-[9%] lg:top-24 lg:right-[6%]">
           <ReviewsCard className="rotate-[3deg]" />
         </Float>
 

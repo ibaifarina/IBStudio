@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Host_Grotesk, Lora } from "next/font/google";
+import { Geist, Geist_Mono, Host_Grotesk, Instrument_Sans, Lora } from "next/font/google";
 import { MotionProvider } from "@/components/motion-provider";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { Toaster } from "@/components/ui/sonner";
@@ -9,6 +9,12 @@ import "./globals.css";
 const host = Host_Grotesk({ variable: "--font-host", subsets: ["latin"] });
 const mono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
+const display = Instrument_Sans({
+  variable: "--font-site-display",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
 const lora = Lora({
   variable: "--font-site-serif",
   subsets: ["latin"],
@@ -21,11 +27,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: "ib.studio | Diseño web para negocios locales en Barcelona",
   description:
-    "Diseño y desarrollo de páginas web rápidas, modernas y optimizadas para móvil. Más llamadas, reservas y clientes para tu negocio. Pago único, sin cuotas.",
+    "Diseño y desarrollo de páginas web rápidas, modernas y optimizadas para móvil. Más llamadas, reservas y clientes para tu negocio, con mantenimiento mensual incluido.",
   keywords: ["diseño web Barcelona", "páginas web para negocios", "agencia web Barcelona", "diseño web pymes"],
   openGraph: {
     title: "ib.studio — Webs que convierten visitas en clientes",
-    description: "Webs rápidas y bonitas para negocios locales. Pago único, sin cuotas.",
+    description: "Webs rápidas y bonitas para negocios locales, con mantenimiento mensual.",
     url: site.url,
     siteName: "ib.studio",
     locale: "es_ES",
@@ -51,7 +57,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${host.variable} ${mono.variable} ${geist.variable} ${lora.variable}`}>
+    <html lang="es" className={`${host.variable} ${mono.variable} ${geist.variable} ${lora.variable} ${display.variable}`}>
       <body className="min-h-dvh overflow-x-clip">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <MotionProvider>

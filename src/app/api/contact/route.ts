@@ -8,7 +8,25 @@ type Payload = {
   message?: string;
   website?: string;
   company?: string; // honeypot
+  turnstileToken?: string;
 };
+
+/** Checks the Cloudflare Turnstile token. Skipped when no secret is configured (e.g. local dev). */
+async function verifyTurnstile(token: string | undefined, ip: string | null) {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) return true;
+  if (!token) return false;
+  const form = new URLSearchParams({ secret, response: token });
+  if (ip) form.set("remoteip", ip);
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", { method: "POST", body: form });
+    const data = (await res.json()) as { success?: boolean };
+    return data.success === true;
+  } catch (err) {
+    console.error("[contact] Turnstile verification failed", err);
+    return false;
+  }
+}
 
 const escape = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
@@ -23,6 +41,11 @@ export async function POST(req: Request) {
   // Bots fill the hidden field; pretend success.
   if (body.company) return NextResponse.json({ ok: true });
 
+  const ip = req.headers.get("cf-connecting-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? null;
+  if (!(await verifyTurnstile(body.turnstileToken, ip))) {
+    return NextResponse.json({ error: "No hemos podido verificar que no eres un robot. Inténtalo de nuevo." }, { status: 400 });
+  }
+
   const name = body.name?.trim().slice(0, 120);
   const email = body.email?.trim().slice(0, 200);
   if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -32,7 +55,7 @@ export async function POST(req: Request) {
   const fields = {
     Nombre: name,
     Email: email,
-    Teléfono: body.phone ? `+34 ${body.phone}` : "—",
+    Teléfono: body.phone ? (body.phone.trim().startsWith("+") ? body.phone.trim() : `+34 ${body.phone.trim()}`) : "—",
     Plan: body.plan ?? "—",
     "Web actual": body.website || "—",
     Mensaje: body.message || "—",

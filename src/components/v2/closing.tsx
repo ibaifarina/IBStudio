@@ -9,6 +9,7 @@ import { InstagramIcon, Logo, WhatsAppIcon } from "@/components/brand";
 import { Reveal, ease } from "@/components/motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { navV2 } from "@/components/v2/nav";
+import { Turnstile, turnstileSiteKey } from "@/components/v2/turnstile";
 import { Heading } from "@/components/v2/ui";
 import { SELECT_PLAN_EVENT, faqs, plans, site, type PlanId } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -63,6 +64,8 @@ export function ContactV2() {
   const [plan, setPlan] = useState<PlanChoice>("otro");
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [captcha, setCaptcha] = useState<string | null>(null);
+  const [captchaKey, setCaptchaKey] = useState(0);
 
   useEffect(() => {
     const onSelect = (e: Event) => setPlan((e as CustomEvent<PlanId>).detail);
@@ -73,13 +76,14 @@ export function ContactV2() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!consent) return void toast.error("Acepta la política de privacidad para continuar.");
+    if (turnstileSiteKey && !captcha) return void toast.error("Espera a que se complete la verificación anti-spam.");
     const form = e.currentTarget;
     setStatus("sending");
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...Object.fromEntries(new FormData(form)), plan }),
+        body: JSON.stringify({ ...Object.fromEntries(new FormData(form)), plan, turnstileToken: captcha }),
       });
       if (!res.ok) throw new Error((await res.json().catch(() => null))?.error);
       form.reset();
@@ -88,6 +92,10 @@ export function ContactV2() {
     } catch (err) {
       setStatus("idle");
       toast.error(err instanceof Error && err.message ? err.message : "No se pudo enviar. Escríbeme por WhatsApp.");
+    } finally {
+      // Turnstile tokens are single-use: get a fresh one for the next attempt.
+      setCaptcha(null);
+      setCaptchaKey((k) => k + 1);
     }
   }
 
@@ -184,6 +192,12 @@ export function ContactV2() {
                 </FormField>
 
                 <input type="text" name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
+
+                {turnstileSiteKey && (
+                  <div className="-mt-5 sm:col-span-2">
+                    <Turnstile onToken={setCaptcha} resetKey={captchaKey} />
+                  </div>
+                )}
 
                 <label className="flex items-start gap-3 text-[0.85rem] text-neutral-500 sm:col-span-2">
                   <Checkbox checked={consent} onCheckedChange={(v) => setConsent(!!v)} className="mt-0.5 size-[18px] rounded-[5px]" />

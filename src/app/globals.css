@@ -10,7 +10,8 @@
   --font-heading: var(--font-host);
   --font-mono: var(--font-geist-mono);
   --font-ui: var(--font-geist);
-  --font-display: var(--font-site-serif), Georgia, serif;
+  --font-display: var(--font-site-display), var(--font-geist), sans-serif;
+  --font-serif: var(--font-site-serif), Georgia, serif;
 
   --color-paper: var(--paper);
   --color-paper-2: var(--paper-2);
@@ -56,7 +57,7 @@
 
 :root {
   /* Custom display utilities need this alias at runtime as well as in Tailwind. */
-  --font-display: var(--font-site-serif), Georgia, serif;
+  --font-display: var(--font-site-display), var(--font-geist), sans-serif;
 
   --paper: #f3f1ec;
   --paper-2: #e9e6df;
@@ -122,29 +123,32 @@
   @media (width >= 64rem) { padding-inline: 3rem; }
 }
 
-/* ——— v2: modern minimal theme, with Lora display type ——— */
+/* ——— v2: modern minimal theme, with Instrument Sans display type ——— */
 
 @utility text-hero {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 600;
   font-size: clamp(2.7rem, 6vw, 5.75rem);
-  line-height: 1;
-  letter-spacing: -0.015em;
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  word-spacing: 0.08em;
 }
 
 @utility text-h2 {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 500;
   font-size: clamp(2.2rem, 4.2vw, 3.9rem);
   line-height: 1.05;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.035em;
+  word-spacing: 0.08em;
 }
 
 @layer base {
   .v2 h1, .v2 h2, .v2 h3 {
     font-family: var(--font-display);
-    font-weight: 400;
-    letter-spacing: -0.01em;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    word-spacing: 0.06em;
     line-height: 1.05;
   }
 }

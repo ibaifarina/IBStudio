@@ -16,7 +16,7 @@ export function DemoSite() {
           <span className="h-[0.11em] w-[1.25em] rounded bg-white" />
         </span>
         <span className="text-center leading-none">
-          <span className="block font-display text-[1.15em] tracking-[0.14em]">MAR BLAU</span>
+          <span className="block font-serif text-[1.15em] tracking-[0.14em]">MAR BLAU</span>
           <span className="mt-[0.35em] block text-[0.45em] tracking-[0.3em] text-white/75">RESTAURANTE</span>
         </span>
         <span className="flex-1" />
@@ -24,7 +24,7 @@ export function DemoSite() {
 
       {/* Hero copy, low on the photo */}
       <div className="absolute inset-x-0 top-[27%] px-[1.4em]">
-        <p className="font-display text-[2.55em] leading-[0.98] tracking-[-0.01em]">
+        <p className="font-serif text-[2.55em] leading-[0.98] tracking-[-0.01em]">
           Cocina de mar,
           <br />
           <em>frente al mar.</em>

@@ -1,8 +1,7 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
-import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
-import { useLenis } from "lenis/react";
+import { AnimatePresence, animate, motion, useInView, useMotionValue, useReducedMotion, type MotionValue } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRightIcon, CheckIcon, SearchIcon, StarIcon } from "lucide-react";
 import { Reveal, ease } from "@/components/motion";
@@ -55,7 +54,7 @@ export function ProjectsV2() {
   return (
     <section id="proyectos" className="py-24 md:py-32">
       <div className="container-x">
-        <Heading title="Proyectos recientes" sub="Webs reales para negocios reales." />
+        <Heading title="Proyectos recientes" sub="Un proyecto para cliente y conceptos de diseño para distintos sectores." />
 
         <div className="mt-14 grid gap-x-6 gap-y-14 md:mt-16 md:grid-cols-2">
           <Reveal className="md:col-span-2">
@@ -230,7 +229,7 @@ export function ServicesV2() {
       <div className="container-x">
         <Heading title="Todo lo que tu web necesita" />
         <div className="mt-14 grid gap-4 md:mt-16 md:grid-cols-5">
-          <Bento className="md:col-span-3" title="Diseño a medida" line="Sin plantillas. Pensada primero para el móvil." more="Cada web se diseña desde cero con la personalidad de tu negocio, tus colores y tus fotos.">
+          <Bento className="md:col-span-3" title="Diseño a medida" line="Pensada primero para el móvil." more="Cada web se diseña desde cero con la personalidad de tu negocio, tus colores y tus fotos.">
             <DesignVisual />
           </Bento>
           <Bento className="md:col-span-2" delay={0.08} title="WhatsApp y reservas" line="Tus clientes contactan en un toque." more="Sin formularios eternos ni llamadas perdidas.">
@@ -257,11 +256,12 @@ const processSteps = [
   { title: "Online", day: "Día 14", body: "Publicada, con dominio y hosting incluidos.", visual: <LaunchScene /> },
 ];
 
-function Segment({ index, progress }: { index: number; progress: MotionValue<number> }) {
-  const fill = useTransform(progress, (v) => Math.min(1, Math.max(0, v * processSteps.length - index)));
+/** One segment of the mobile stepper: full when done, filling while active, empty when upcoming. */
+function Segment({ state, progress }: { state: "done" | "active" | "next"; progress: MotionValue<number> }) {
   return (
     <span className="relative h-1 flex-1 overflow-hidden rounded-full bg-black/[0.08]">
-      <motion.span style={{ scaleX: fill }} className="absolute inset-0 origin-left rounded-full bg-neutral-400" />
+      {state === "done" && <span className="absolute inset-0 rounded-full bg-neutral-900" />}
+      {state === "active" && <motion.span style={{ scaleX: progress }} className="absolute inset-0 origin-left rounded-full bg-neutral-900" />}
     </span>
   );
 }
@@ -269,11 +269,24 @@ function Segment({ index, progress }: { index: number; progress: MotionValue<num
 function CompactStepper({ active, progress, onSelect }: { active: number; progress: MotionValue<number>; onSelect: (i: number) => void }) {
   const step = processSteps[active];
   return (
-    <div className="mt-5 lg:hidden">
-      <div className="flex gap-1.5">
+    <div className="mt-6 lg:hidden">
+      <div className="flex items-center justify-between text-[0.8rem] text-neutral-500">
+        <span>
+          Paso <span className="text-neutral-950 tabular-nums">{active + 1}</span> de {processSteps.length}
+        </span>
+        <span>{step.day}</span>
+      </div>
+      <div className="mt-2 flex gap-1.5">
         {processSteps.map((s, i) => (
-          <button key={s.title} type="button" aria-label={s.title} onClick={() => onSelect(i)} className="flex flex-1 py-2">
-            <Segment index={i} progress={progress} />
+          <button
+            key={s.title}
+            type="button"
+            aria-label={`Paso ${i + 1}: ${s.title}`}
+            aria-current={i === active ? "step" : undefined}
+            onClick={() => onSelect(i)}
+            className="flex flex-1 cursor-pointer py-2"
+          >
+            <Segment state={i < active ? "done" : i === active ? "active" : "next"} progress={progress} />
           </button>
         ))}
       </div>
@@ -284,15 +297,9 @@ function CompactStepper({ active, progress, onSelect }: { active: number; progre
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.35, ease }}
-          className="mt-3"
+          className="mt-2"
         >
-          <div className="flex items-baseline justify-between gap-4">
-            <span className="flex items-baseline gap-3">
-              <span className="text-[0.8rem] text-brand tabular-nums">0{active + 1}</span>
-              <span className="font-display text-[1.6rem] leading-tight">{step.title}</span>
-            </span>
-            <span className="text-[0.8rem] text-neutral-500">{step.day}</span>
-          </div>
+          <span className="font-display text-[1.6rem] leading-tight font-medium tracking-[-0.035em]">{step.title}</span>
           <p className="mt-1 text-[0.95rem] text-neutral-500">{step.body}</p>
         </motion.div>
       </AnimatePresence>
@@ -300,20 +307,37 @@ function CompactStepper({ active, progress, onSelect }: { active: number; progre
   );
 }
 
+/** Small ring that fills until the next step. */
+function StepTimer({ progress }: { progress: MotionValue<number> }) {
+  return (
+    <svg viewBox="0 0 16 16" className="size-3.5 -rotate-90" aria-hidden>
+      <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" strokeOpacity="0.2" strokeWidth="2" />
+      <motion.circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ pathLength: progress }} />
+    </svg>
+  );
+}
+
 function StepRow({
   step,
   index,
   active,
+  progress,
   onSelect,
 }: {
   step: (typeof processSteps)[number];
   index: number;
   active: boolean;
+  progress: MotionValue<number>;
   onSelect: () => void;
 }) {
   return (
     <li>
-      <button type="button" onClick={onSelect} className="relative isolate w-full rounded-[22px] px-5 py-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-brand/40">
+      <button
+        type="button"
+        onClick={onSelect}
+        aria-current={active ? "step" : undefined}
+        className="relative isolate w-full cursor-pointer overflow-hidden rounded-[22px] px-5 py-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+      >
         {active && (
           <motion.span
             layoutId="process-active-step"
@@ -329,14 +353,15 @@ function StepRow({
             <span className="flex items-baseline justify-between gap-4">
               <span
                 className={cn(
-                  "font-display text-[1.5rem] leading-tight transition-colors duration-500 lg:text-[1.9rem]",
+                  "font-display text-[1.5rem] leading-tight font-medium tracking-[-0.035em] transition-colors duration-500 lg:text-[1.75rem]",
                   active ? "text-neutral-950" : "text-neutral-300",
                 )}
               >
                 {step.title}
               </span>
-              <span className={cn("text-[0.8rem] transition-colors duration-500", active ? "text-neutral-500" : "text-neutral-300")}>
+              <span className={cn("flex items-center gap-2 text-[0.8rem] transition-colors duration-500", active ? "text-neutral-500" : "text-neutral-300")}>
                 {step.day}
+                {active && <StepTimer progress={progress} />}
               </span>
             </span>
             <AnimatePresence initial={false}>
@@ -359,10 +384,18 @@ function StepRow({
   );
 }
 
+const STEP_SECONDS = 4.5;
+
 export function ProcessV2() {
   const ref = useRef<HTMLElement>(null);
-  const lenis = useLenis();
   const [active, setActive] = useState(0);
+  const [hovered, setHovered] = useState(false);
+  const progress = useMotionValue(0);
+  const inView = useInView(ref, { amount: 0.35 });
+  const reduce = useReducedMotion();
+  const playing = inView && !hovered && !reduce;
+  const n = processSteps.length;
+
   const panelRef = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState(1);
   // Scale the 440×320 scenes to fill the panel, whatever its size.
@@ -379,53 +412,60 @@ export function ProcessV2() {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const n = processSteps.length;
 
-  useMotionValueEvent(scrollYProgress, "change", (v) => setActive(Math.min(n - 1, Math.floor(v * n))));
+  // Each new step starts its timer from zero (or shows as complete when autoplay is off).
+  useEffect(() => {
+    progress.set(reduce ? 1 : 0);
+  }, [active, progress, reduce]);
 
-  const goTo = (i: number) => {
-    const el = ref.current;
-    if (!el) return;
-    const top = el.offsetTop + (el.offsetHeight - window.innerHeight) * ((i + 0.15) / n);
-    if (lenis) lenis.scrollTo(top);
-    else window.scrollTo({ top, behavior: "smooth" });
-  };
+  // Autoplay: fill the active step's bar, then move on. Pausing keeps the bar where it is.
+  useEffect(() => {
+    if (!playing) return;
+    const controls = animate(progress, 1, {
+      duration: STEP_SECONDS * (1 - progress.get()),
+      ease: "linear",
+      onComplete: () => setActive((a) => (a + 1) % n),
+    });
+    return () => controls.stop();
+  }, [playing, active, progress, n]);
 
   return (
-    <section id="proceso" ref={ref} className="relative h-[340vh]">
-      <div className="sticky top-0 flex h-svh items-start pt-20 lg:items-center lg:pt-16">
-        <div className="container-x grid w-full items-center gap-8 lg:grid-cols-[1fr_1.15fr] lg:gap-20">
-          <div>
-            <h2 className="text-h2">
-              Online en <em>dos semanas</em>
-            </h2>
-            <p className="mt-3 hidden text-[1.05rem] text-neutral-500 sm:block">Un proceso claro, sin sorpresas.</p>
-            <CompactStepper active={active} progress={scrollYProgress} onSelect={goTo} />
-            <ol className="-mx-5 mt-8 hidden flex-col gap-1 lg:flex">
-              {processSteps.map((step, i) => (
-                <StepRow key={step.title} step={step} index={i} active={i === active} onSelect={() => goTo(i)} />
-              ))}
-            </ol>
-          </div>
+    <section id="proceso" ref={ref} className="py-24 md:py-32">
+      <div
+        className="container-x grid w-full items-center gap-8 lg:grid-cols-[1fr_1.15fr] lg:gap-20"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <div>
+          <h2 className="text-h2">Online en dos semanas</h2>
+          <p className="mt-3 text-[1.05rem] text-neutral-500">Cuatro pasos, sin sorpresas.</p>
+          <CompactStepper active={active} progress={progress} onSelect={setActive} />
+          <ol className="-mx-5 mt-8 hidden flex-col gap-1 lg:flex">
+            {processSteps.map((step, i) => (
+              <StepRow key={step.title} step={step} index={i} active={i === active} progress={progress} onSelect={() => setActive(i)} />
+            ))}
+          </ol>
+        </div>
 
-          <div ref={panelRef} className={cn(card, "relative flex aspect-[300/360] max-h-[52svh] w-full items-center justify-center overflow-hidden sm:aspect-auto sm:max-h-none sm:h-[min(58svh,480px)] lg:h-[480px]")}>
-            <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,white_0%,transparent_70%)] opacity-70" />
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={active}
-                initial={{ opacity: 0, y: 24, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -16, scale: 0.98 }}
-                transition={{ duration: 0.5, ease }}
-                className="relative flex w-full justify-center"
-              >
-                <div data-scene className="flex shrink-0 origin-center justify-center" style={{ transform: `scale(${fit})` }}>
-                  {processSteps[active].visual}
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+        <div
+          ref={panelRef}
+          className={cn(card, "relative flex aspect-[300/360] w-full items-center justify-center overflow-hidden sm:aspect-auto sm:h-[440px] lg:h-[480px]")}
+        >
+          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,white_0%,transparent_70%)] opacity-70" />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -16, scale: 0.98 }}
+              transition={{ duration: 0.5, ease }}
+              className="relative flex w-full justify-center"
+            >
+              <div data-scene className="flex shrink-0 origin-center justify-center" style={{ transform: `scale(${fit})` }}>
+                {processSteps[active].visual}
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </section>
@@ -438,7 +478,7 @@ export function PricingV2() {
   return (
     <section id="precios" className="py-24 md:py-32">
       <div className="container-x">
-        <Heading title="Precios claros" sub="Pago único. Sin cuotas. Dominio y hosting el primer año incluidos." />
+        <Heading title="Precios claros" sub="Un pago inicial por la web y una cuota mensual de mantenimiento." />
         <div className="mx-auto mt-14 grid max-w-6xl gap-4 md:mt-16 lg:grid-cols-3">
           {plans.map((plan, i) => {
             const f = plan.featured;
@@ -458,6 +498,7 @@ export function PricingV2() {
                 <p className="mt-8 font-display text-[3.8rem] leading-none tracking-[-0.03em]">
                   {plan.price} <span className="text-[2rem]">€</span>
                 </p>
+                <p className={cn("mt-2 text-[0.85rem]", f ? "text-white/50" : "text-neutral-400")}>Pago inicial + mantenimiento mensual</p>
                 <p className={cn("mt-3 text-[0.95rem]", f ? "text-white/60" : "text-neutral-500")}>{plan.description}</p>
 
                 <a

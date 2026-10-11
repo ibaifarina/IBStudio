@@ -49,7 +49,7 @@ export function SecondaryButton({ href, children, className }: { href: string; c
     <a
       href={href}
       className={cn(
-        "inline-flex h-12 items-center rounded-full bg-white px-6 text-[0.95rem] font-medium text-neutral-950 shadow-[0_0_0_1px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-[0_0_0_1px_rgba(0,0,0,0.9)]",
+        "inline-flex h-12 items-center rounded-full bg-[#f5f5f3] px-6 text-[0.95rem] font-medium text-neutral-950 transition-colors duration-300 hover:bg-[#ebebe8]",
         className,
       )}
     >

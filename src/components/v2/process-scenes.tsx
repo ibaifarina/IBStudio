@@ -106,7 +106,7 @@ export function ProposalScene() {
           <Image src={seaside} alt="" fill sizes="340px" className="object-cover object-[50%_45%]" />
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          <p className="absolute bottom-3 left-3 font-display text-[1.25rem] leading-tight text-white">
+          <p className="absolute bottom-3 left-3 font-serif text-[1.25rem] leading-tight text-white">
             Cocina de mar,
             <br />
             <em>frente al mar.</em>
@@ -121,7 +121,7 @@ export function ProposalScene() {
 
       {/* Palette */}
       <motion.div {...pop(0.2)} className={cn(surface, "absolute top-6 right-0 flex w-[58px] flex-col items-center gap-2 py-3 sm:w-[76px]")}>
-        <span className="font-display text-[1.4rem] leading-none">Aa</span>
+        <span className="font-serif text-[1.4rem] leading-none">Aa</span>
         {["#3a63ff", "#0f1b3d", "#e9eefc", "#f5c26b"].map((c) => (
           <span key={c} className="size-6 rounded-full shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]" style={{ backgroundColor: c }} />
         ))}
@@ -234,9 +234,9 @@ export function LaunchScene() {
           <Image src={seaside} alt="" fill sizes="370px" className="object-cover object-[50%_45%]" />
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-black/30" />
-          <p className="absolute top-3 left-0 w-full text-center font-display text-[0.8rem] tracking-[0.2em] text-white">MAR BLAU</p>
+          <p className="absolute top-3 left-0 w-full text-center font-serif text-[0.8rem] tracking-[0.2em] text-white">MAR BLAU</p>
           <div className="absolute bottom-4 left-4">
-            <p className="font-display text-[1.5rem] leading-tight text-white">
+            <p className="font-serif text-[1.5rem] leading-tight text-white">
               Cocina de mar,
               <br />
               <em>frente al mar.</em>
