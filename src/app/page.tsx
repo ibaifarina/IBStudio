@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { ContactV2, FaqV2, FooterV2 } from "@/components/v2/closing";
 import { HeroV2 } from "@/components/v2/hero";
 import { NavV2 } from "@/components/v2/nav";
 import { PricingV2, ProcessV2, ProjectsV2, ServicesV2 } from "@/components/v2/sections";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default function Home() {
   return (

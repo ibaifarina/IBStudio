@@ -264,14 +264,15 @@ export function ContactV2() {
   );
 }
 
-export function FooterV2() {
+/** `linkPrefix="/"` makes the section links work from pages other than the homepage. */
+export function FooterV2({ linkPrefix = "" }: { linkPrefix?: string }) {
   return (
     <footer className="container-x pt-6 pb-10">
       <div className="flex flex-col gap-8 border-t border-black/[0.06] pt-10 md:flex-row md:items-center md:justify-between">
         <Logo className="text-xl" />
         <nav className="flex flex-wrap gap-x-6 gap-y-2 text-[0.9rem] text-neutral-500" aria-label="Pie">
           {navV2.map((n) => (
-            <a key={n.href} href={n.href} className="hover:text-neutral-950">
+            <a key={n.href} href={`${linkPrefix}${n.href}`} className="hover:text-neutral-950">
               {n.label}
             </a>
           ))}
@@ -295,7 +296,7 @@ export function FooterV2() {
         </div>
       </div>
       <div className="mt-8 flex flex-col gap-3 text-[0.8rem] text-neutral-400 sm:flex-row sm:justify-between">
-        <p>© 2026 ib.studio · Barcelona</p>
+        <p>© 2026 IB Studio · Barcelona</p>
         <div className="flex gap-5">
           <a href="/privacidad" className="hover:text-neutral-950">Privacidad</a>
           <a href="/aviso-legal" className="hover:text-neutral-950">Aviso legal</a>

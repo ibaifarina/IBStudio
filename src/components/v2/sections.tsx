@@ -299,7 +299,7 @@ function CompactStepper({ active, progress, onSelect }: { active: number; progre
           transition={{ duration: 0.35, ease }}
           className="mt-2"
         >
-          <span className="font-display text-[1.6rem] leading-tight font-medium tracking-[-0.035em]">{step.title}</span>
+          <span className="font-display text-[1.6rem] leading-tight">{step.title}</span>
           <p className="mt-1 text-[0.95rem] text-neutral-500">{step.body}</p>
         </motion.div>
       </AnimatePresence>
@@ -353,7 +353,7 @@ function StepRow({
             <span className="flex items-baseline justify-between gap-4">
               <span
                 className={cn(
-                  "font-display text-[1.5rem] leading-tight font-medium tracking-[-0.035em] transition-colors duration-500 lg:text-[1.75rem]",
+                  "font-display text-[1.5rem] leading-tight transition-colors duration-500 lg:text-[1.75rem]",
                   active ? "text-neutral-950" : "text-neutral-300",
                 )}
               >

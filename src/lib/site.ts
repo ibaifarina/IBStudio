@@ -4,13 +4,22 @@ import lumiere from "../../public/work/lumiere.webp";
 import lumiereMobile from "../../public/work/lumiere-mobile.png";
 
 export const site = {
-  name: "ib.studio",
+  /** Brand name as it should appear in Google, titles and legal pages. The logo keeps its "ib.studio" styling. */
+  name: "IB Studio",
   url: "https://www.ibstudio.es",
   email: "ibaifo8@gmail.com",
   phone: "+34 711 55 52 67",
   phoneHref: "tel:+34711555267",
   whatsapp: "https://wa.me/34711555267",
   instagram: "https://www.instagram.com/ib.webs/",
+};
+
+/** Owner details for the legal pages (LSSI art. 10). Add NIF and full address here when available. */
+export const legal = {
+  owner: "Ibai Farina del Olmo",
+  city: "Barcelona",
+  country: "España",
+  updated: "11 de octubre de 2026",
 };
 
 /** Dispatched by pricing CTAs so the contact form preselects that plan. */
